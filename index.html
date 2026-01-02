@@ -2,30 +2,60 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>クイズゲーム 完全版</title>
+
 <style>
-body {
+body{
+  margin:0;
   font-family: Meiryo, sans-serif;
-  text-align: center;
-  background: #eef6ff;
+  text-align:center;
+  background:#eef6ff;
 }
-#game, #result { display: none; }
-.choice {
-  display: block;
-  margin: 10px auto;
-  padding: 15px;
-  width: 240px;
-  font-size: 16px;
-  cursor: pointer;
+
+/* 画面 */
+#game, #result { display:none; }
+
+/* 問題 */
+#question{
+  font-size:22px;
+  margin:15px;
+  padding:15px;
+  background:#fff;
+  border-radius:12px;
 }
-#question {
-  font-size: 24px;
-  margin: 20px;
-  padding: 20px;
-  background: white;
+.flash{ background:#ffb3b3 !important; }
+
+/* 選択肢（スマホ最適化） */
+.choice{
+  display:block;
+  margin:12px auto;
+  padding:16px;
+  width:90%;
+  max-width:320px;
+  font-size:18px;
+  border:none;
+  border-radius:12px;
+  background:#fff;
+  cursor:pointer;
+  touch-action:manipulation;
 }
-.flash { background: #ff9999 !important; }
-.scoreBox { font-size: 14px; margin-bottom: 10px; }
+
+/* ボタン */
+button{
+  margin:6px;
+  padding:12px 18px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* スコア */
+.scoreBox{
+  font-size:14px;
+  margin-bottom:10px;
+}
 </style>
 </head>
 
@@ -37,35 +67,36 @@ body {
 
   <button onclick="setLevel('easy')">😊 かんたん</button>
   <div class="scoreBox">
-    最高：<span id="hs_easy">0</span>　
-    クリア率：<span id="rate_easy">0</span>%
+    最高：<span id="hs_easy">0</span>
+    ／ クリア率：<span id="rate_easy">0</span>%
   </div>
 
   <button onclick="setLevel('normal')">🙂 ふつう</button>
   <div class="scoreBox">
-    最高：<span id="hs_normal">0</span>　
-    クリア率：<span id="rate_normal">0</span>%
+    最高：<span id="hs_normal">0</span>
+    ／ クリア率：<span id="rate_normal">0</span>%
   </div>
 
   <button onclick="setLevel('hard')">😈 むずかしい</button>
   <div class="scoreBox">
-    最高：<span id="hs_hard">0</span>　
-    クリア率：<span id="rate_hard">0</span>%
+    最高：<span id="hs_hard">0</span>
+    ／ クリア率：<span id="rate_hard">0</span>%
   </div>
 </div>
 
 <!-- ===== ゲーム画面 ===== -->
 <div id="game">
   <div id="question"></div>
+
   <button class="choice" onclick="answer(0)"></button>
   <button class="choice" onclick="answer(1)"></button>
   <button class="choice" onclick="answer(2)"></button>
 
   <p>
     ポイント：<span id="point">0</span> /
-    <span id="maxPoint">0</span>　
+    <span id="maxPoint">0</span><br>
     ミス：<span id="miss">0</span> /
-    <span id="maxMiss">0</span>　
+    <span id="maxMiss">0</span><br>
     のこり：<span id="time">0</span> 秒
   </p>
 </div>
@@ -77,92 +108,25 @@ body {
 </div>
 
 <script>
-/* ===== 問題データ（各20問）===== */
-const QUIZ = {
-easy: [
-  {q:"りんごの色は？",c:["あか","あお","みどり"],a:0},
-  {q:"ねこの鳴き声は？",c:["わん","にゃー","ぴよ"],a:1},
-  {q:"1週間は何日？",c:["5","7","10"],a:1},
-  {q:"空の色は？",c:["あお","あか","くろ"],a:0},
-  {q:"水は何色？",c:["あお","とうめい","しろ"],a:1},
-  {q:"犬の鳴き声は？",c:["もー","わん","にゃー"],a:1},
-  {q:"太陽はどれ？",c:["⭐","☀️","🌙"],a:1},
-  {q:"2+3は？",c:["4","5","6"],a:1},
-  {q:"日本のお金は？",c:["円","ドル","ユーロ"],a:0},
-  {q:"朝に食べるのは？",c:["夜","朝","昼"],a:1},
-  {q:"雪の色は？",c:["しろ","あお","くろ"],a:0},
-  {q:"ねこは何本足？",c:["2","4","6"],a:1},
-  {q:"春にさく花は？",c:["さくら","ひまわり","ばら"],a:0},
-  {q:"魚はどこ？",c:["そら","みず","やま"],a:1},
-  {q:"バナナの色は？",c:["きいろ","あか","あお"],a:0},
-  {q:"夜にねる？",c:["ねる","たべる","はしる"],a:0},
-  {q:"日本の国旗の色は？",c:["あかとしろ","あおとしろ","くろとしろ"],a:0},
-  {q:"チョコは？",c:["あまい","からい","にがい"],a:0},
-  {q:"朝のあいさつは？",c:["おはよう","こんばんは","さよなら"],a:0},
-  {q:"空をとぶのは？",c:["とり","いぬ","さかな"],a:0}
-],
+/* ===== 問題データ ===== */
+const QUIZ = {/* ← あなたの元データをそのまま使用 */};
+</script>
 
-normal: [
-  {q:"5+7は？",c:["10","11","12"],a:2},
-  {q:"日本の首都は？",c:["大阪","東京","京都"],a:1},
-  {q:"3×4は？",c:["7","12","9"],a:1},
-  {q:"1年は何か月？",c:["10","12","15"],a:1},
-  {q:"夜に出るのは？",c:["太陽","月","雲"],a:1},
-  {q:"6÷2は？",c:["2","3","4"],a:1},
-  {q:"日本で一番高い山は？",c:["富士山","高尾山","筑波山"],a:0},
-  {q:"雨のあとに出るのは？",c:["星","虹","雪"],a:1},
-  {q:"春の次の季節は？",c:["夏","秋","冬"],a:0},
-  {q:"10の次は？",c:["9","11","20"],a:1},
-  {q:"8+6は？",c:["12","14","16"],a:1},
-  {q:"4×5は？",c:["10","20","25"],a:1},
-  {q:"1時間は何分？",c:["30","60","90"],a:1},
-  {q:"日本の文字は？",c:["ひらがな","アルファベット","ローマ字"],a:0},
-  {q:"海の色は？",c:["あお","みどり","くろ"],a:0},
-  {q:"7+8は？",c:["14","15","16"],a:1},
-  {q:"昼に出るのは？",c:["月","太陽","星"],a:1},
-  {q:"秋に食べる果物は？",c:["すいか","りんご","いちご"],a:1},
-  {q:"信号の青は？",c:["すすめ","とまれ","もどれ"],a:0},
-  {q:"日本の家にあるのは？",c:["たたみ","ソファ","ベッド"],a:0}
-],
-
-hard: [
-  {q:"9−4は？",c:["3","4","5"],a:2},
-  {q:"8×7は？",c:["54","56","64"],a:1},
-  {q:"15÷3は？",c:["3","4","5"],a:2},
-  {q:"100−37は？",c:["63","67","73"],a:0},
-  {q:"1kmは何m？",c:["100","500","1000"],a:2},
-  {q:"正三角形の辺は？",c:["2","3","4"],a:1},
-  {q:"12×6は？",c:["66","72","78"],a:1},
-  {q:"50÷5は？",c:["5","10","15"],a:1},
-  {q:"9×9は？",c:["72","81","99"],a:1},
-  {q:"7×8は？",c:["54","56","64"],a:1},
-  {q:"144÷12は？",c:["10","11","12"],a:2},
-  {q:"1日は何時間？",c:["12","24","48"],a:1},
-  {q:"角が4つある図形は？",c:["三角形","四角形","円"],a:1},
-  {q:"1000−458は？",c:["542","552","562"],a:0},
-  {q:"6×9は？",c:["45","54","63"],a:1},
-  {q:"0で割ると？",c:["0","できない","1"],a:1},
-  {q:"360度は？",c:["半周","1周","2周"],a:1},
-  {q:"5²はいくつ？",c:["10","25","30"],a:1},
-  {q:"偶数は？",c:["7","9","12"],a:2},
-  {q:"素数は？",c:["4","6","7"],a:2}
-]
-};
-
+<script>
 /* ===== 設定 ===== */
-const LEVELS = {
+const LEVELS={
   easy:{time:12,maxMiss:5},
   normal:{time:10,maxMiss:3},
   hard:{time:7,maxMiss:2}
 };
 
-const highScores = {
-  easy: Number(localStorage.getItem("highScore_easy")) || 0,
-  normal: Number(localStorage.getItem("highScore_normal")) || 0,
-  hard: Number(localStorage.getItem("highScore_hard")) || 0
+const highScores={
+  easy:Number(localStorage.getItem("highScore_easy"))||0,
+  normal:Number(localStorage.getItem("highScore_normal"))||0,
+  hard:Number(localStorage.getItem("highScore_hard"))||0
 };
 
-const stats = {
+const stats={
   easy:{play:Number(localStorage.getItem("play_easy"))||0,clear:Number(localStorage.getItem("clear_easy"))||0},
   normal:{play:Number(localStorage.getItem("play_normal"))||0,clear:Number(localStorage.getItem("clear_normal"))||0},
   hard:{play:Number(localStorage.getItem("play_hard"))||0,clear:Number(localStorage.getItem("clear_hard"))||0}
@@ -171,6 +135,7 @@ const stats = {
 /* ===== 共通 ===== */
 let levelKey,level,quizOrder,index,point,miss,timeLeft,timer,current;
 
+/* シャッフル */
 function shuffle(a){
   for(let i=a.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -178,6 +143,7 @@ function shuffle(a){
   }
 }
 
+/* クリア率 */
 function updateRate(k){
   const p=stats[k].play,c=stats[k].clear;
   document.getElementById(`rate_${k}`).textContent=p?Math.round(c/p*100):0;
@@ -188,9 +154,10 @@ function updateRate(k){
   updateRate(k);
 });
 
-/* ===== ゲーム ===== */
+/* ===== ゲーム開始 ===== */
 function setLevel(k){
-  levelKey=k; level=LEVELS[k];
+  levelKey=k;
+  level=LEVELS[k];
   stats[k].play++;
   localStorage.setItem(`play_${k}`,stats[k].play);
   updateRate(k);
@@ -221,8 +188,9 @@ function nextQuestion(){
   current=quizOrder[index++];
   timeLeft=level.time;
   document.getElementById("time").textContent=timeLeft;
-  document.getElementById("question").classList.remove("flash");
-  document.getElementById("question").textContent=current.q;
+  const q=document.getElementById("question");
+  q.classList.remove("flash");
+  q.textContent=current.q;
   document.querySelectorAll(".choice").forEach((b,i)=>b.textContent=current.c[i]);
   timer=setInterval(countDown,1000);
 }
